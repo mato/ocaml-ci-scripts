@@ -38,6 +38,7 @@ let have_secret =
 let is_xen =
   getenv_default "MIRAGE_BACKEND" "" |> function "xen" -> true | _ -> false
 let travis_branch = getenv_default "TRAVIS_BRANCH" ""
+let src_dir = getenv_default "SRC_DIR" "."
 
 (* Script *)
 
@@ -53,6 +54,7 @@ let pin pin = match pair pin with
 
 (* Go go go *)
 
+cd src_dir;
 set "-ex";
 export "OPAMYES" "1";
 ?| "eval $(opam config env)";
@@ -64,9 +66,6 @@ List.iter pin pins;
 
 ?| "opam update -u";
 ?| "opam install 'mirage>=3.0.0'";
-?| "pwd";
-?| {| [ -n "$SRC_DIR" ] && cd "$SRC_DIR" |};
-?| "pwd";
 ?| "mirage configure -t $MIRAGE_BACKEND";
 ?| "make depend";
 ?| "make";
